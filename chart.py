@@ -2,46 +2,48 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
-
-# Generate realistic synthetic data
-
-data = {
-    "Product": ["A", "B", "C", "D", "E"],
-    "Sales": [350, 420, 280, 510, 460]
-}
-df = pd.DataFrame(data)
-
-
-# Seaborn styling
-
+# Set professional style and context for presentation-ready visualization
 sns.set_style("whitegrid")
 sns.set_context("talk")
-palette = sns.color_palette("Blues_d", n_colors=len(df["Product"].unique()))
 
+# Generate synthetic realistic data for product performance insights
+np.random.seed(42)
+products = ["Product A", "Product B", "Product C", "Product D", "Product E"]
+sales = np.random.randint(80, 500, size=len(products))
+profit_margin = np.random.uniform(0.1, 0.4, size=len(products))
 
-# Create the barplot
+data = pd.DataFrame({
+    "Product": products,
+    "Sales": sales,
+    "Profit Margin": profit_margin
+})
 
-plt.figure(figsize=(8, 8))  # 8 inches x 8 inches → 512x512 px at dpi=64
-ax = sns.barplot(
-    data=df,
-    x="Product",
-    y="Sales",
-    hue="Product",           # ensure palette is applied
-    palette=palette,
-    legend=False             # remove redundant legend
+# Calculate profit as a business insight metric (optional)
+data["Profit"] = data["Sales"] * data["Profit Margin"]
+
+# Create a barplot visualizing Sales by Product with a professional color palette
+plt.figure(figsize=(9, 8.88), dpi=64)  
+
+barplot = sns.barplot(
+    x="Product", 
+    y="Sales", 
+    data=data, 
+    palette="deep"
 )
 
+# Customize titles and labels
+barplot.set_title("Sales Performance by Product", fontsize=20, weight='bold')
+barplot.set_xlabel("Product", fontsize=16)
+barplot.set_ylabel("Total Sales (Units)", fontsize=16)
 
-# Customize chart
+# Optionally annotate bars with sales values
+for p in barplot.patches:
+    height = p.get_height()
+    barplot.annotate(f'{int(height)}', (p.get_x() + p.get_width() / 2., height),
+                     ha='center', va='bottom', fontsize=14)
 
-ax.set_title("Product Sales Performance", fontsize=18, weight="bold")
-ax.set_xlabel("Product", fontsize=14)
-ax.set_ylabel("Sales (Units)", fontsize=14)
-
-sns.despine()
-
-# Save the chart
-
-plt.savefig("chart.png", dpi=64, bbox_inches="tight")
+# Save the figure with exact 512x512 pixels
+plt.savefig("chart.png", dpi=64, bbox_inches='tight')
 plt.close()
